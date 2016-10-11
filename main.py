@@ -49,12 +49,24 @@ class NewPost(Handler):
     """ Handler for creating a new blog post """
     def blog_creation(self, subject="", content="", error=""):
         """ Renders blog post creation screen, preserving user input """
-        # subject = self.request.get("subject")
-        # content = self.request.get("content")
+
 
         self.render("newpost.html", subject=subject,
                     content=content, error=error)
 
+    def post(self):
+        """ Gathers blog post data and, if valid, writes to database """
+        subject = self.request.get("subject")
+        content = self.request.get("content")
+
+        if subject and content:
+            new_post = Post(subject=subject, content=content)
+            new_post.put()
+
+            #TODO: Redirect to permalink page
+        else:
+            error = "Error: Subject and content are both required"
+            self.blog_creation(subject, content, error)
 
     def get(self):
         self.blog_creation()
