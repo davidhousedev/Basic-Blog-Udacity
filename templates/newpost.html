@@ -4,16 +4,18 @@
 
     <form method="post">
         <label>
-            <div>subject</div>
+            <div class="subject">subject</div>
             <input name="subject" type="text" value="{{subject}}">
         </label>
 
         <label>
-            <div>content</div>
+            <div class="content">content</div>
             <textarea name="content" type="text">{{content}}</textarea>
         </label>
         <br>
         <input type="submit">
+
+        <div class="error">{{error}}</div>
 
     </form>
 
