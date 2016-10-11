@@ -64,8 +64,6 @@ class NewPost(Handler):
             new_post.put()
 
             self.redirect("/post/%s" % new_post.key().id())
-            # get id with new:_post.key().id()
-            #TODO: Redirect to permalink page
         else:
             error = "Error: Subject and content are both required"
             self.blog_creation(subject, content, error)
@@ -78,8 +76,11 @@ class BlogPost(Handler):
 
     def get(self, post_id):
         """ Queries database for post id and renders it """
-        self.response.out.write("Hello post! ID: %s" % post_id)
-        #example post id: 5275456790069248
+        post_id = int(post_id)
+        post = Post.get_by_id(post_id)
+
+        self.render("post.html", post=post)
+
 
 
 app = webapp2.WSGIApplication([('/', Blog),
