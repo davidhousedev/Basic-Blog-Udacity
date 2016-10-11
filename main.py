@@ -37,12 +37,13 @@ class Blog(Handler):
 
     def display_posts(self):
         """ Display 10 most recent blog posts """
-        posts = db.GqlQuery("SELECT * FROM Blog "
+        posts = db.GqlQuery("SELECT * FROM Post "
                             "ORDER BY created DESC")
         self.render("blog.html", posts=posts)
 
     def get(self):
         """ Handle GET requests """
+        #self.render("blog.html")
         self.display_posts()
 
 app = webapp2.WSGIApplication([('/', Blog),
