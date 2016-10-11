@@ -3,6 +3,8 @@ import os
 import jinja2
 import webapp2
 
+from google.appengine.ext import db
+
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
 JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=False)
@@ -23,13 +25,27 @@ class Handler(webapp2.RequestHandler):
         with any number of vars (params1+) """
         self.write(self.render_str(template, **kw))
 
-class MainPage(Handler):
+class Post(db.Model):
+    """ Database entry for a blog post """
+    subject = db.StringProperty(required=True)
+    content = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+
+
+class Blog(Handler):
     """ Default HTTP Request Handler """
+
+    def display_posts(self):
+        """ Display 10 most recent blog posts """
+        posts = db.GqlQuery("SELECT * FROM Blog "
+                            "ORDER BY created DESC")
+        self.render("blog.html", posts=posts)
+
     def get(self):
         """ Handle GET requests """
-        self.render("index.html")
+        self.display_posts()
 
-app = webapp2.WSGIApplication([('/', MainPage),
+app = webapp2.WSGIApplication([('/', Blog),
                               ],
                               debug=True
                               )
