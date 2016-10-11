@@ -43,10 +43,24 @@ class Blog(Handler):
 
     def get(self):
         """ Handle GET requests """
-        #self.render("blog.html")
         self.display_posts()
 
+class NewPost(Handler):
+    """ Handler for creating a new blog post """
+    def blog_creation(self, subject="", title="" error=""):
+        """ Renders blog post creation screen, preserving user input """
+        # subject = self.request.get("subject")
+        # content = self.request.get("content")
+
+        self.render("newpost.html", subject=subject,
+                    content=content, error=error)
+
+
+    def get(self):
+        self.blog_creation()
+
 app = webapp2.WSGIApplication([('/', Blog),
+                               ('/newpost', NewPost)
                               ],
                               debug=True
                               )
