@@ -62,6 +62,8 @@ class NewPost(Handler):
         if subject and content:
             new_post = Post(subject=subject, content=content)
             new_post.put()
+
+            self.redirect("/post/%s" % new_post.key().id())
             # get id with new:_post.key().id()
             #TODO: Redirect to permalink page
         else:
@@ -76,12 +78,13 @@ class BlogPost(Handler):
 
     def get(self, post_id):
         """ Queries database for post id and renders it """
-        pass
+        self.response.out.write("Hello post! ID: %s" % post_id)
+        #example post id: 5275456790069248
 
 
 app = webapp2.WSGIApplication([('/', Blog),
                                ('/newpost', NewPost),
-                               ('/post/(/d+)', BlogPost),
+                               ('/post/(\d+)', BlogPost),
                               ],
                               debug=True
                               )
