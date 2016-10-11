@@ -47,7 +47,7 @@ class Blog(Handler):
 
 class NewPost(Handler):
     """ Handler for creating a new blog post """
-    def blog_creation(self, subject="", title="" error=""):
+    def blog_creation(self, subject="", content="", error=""):
         """ Renders blog post creation screen, preserving user input """
         # subject = self.request.get("subject")
         # content = self.request.get("content")
