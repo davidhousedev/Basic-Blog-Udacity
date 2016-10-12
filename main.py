@@ -175,7 +175,7 @@ class UserSignUp(Handler):
             users = db.GqlQuery("SELECT * FROM User WHERE username='%s'" % form_data['user_username'])
             for user in users:
                 if user.username == form_data['user_username']:
-                    form_data['username_error'] = "User already exists"
+                    form_data['username_error'] = "That user already exists."
                     form_data['user_username'] = ""
                     error_flag = True
 
