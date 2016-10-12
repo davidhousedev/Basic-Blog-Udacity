@@ -176,6 +176,7 @@ class UserSignUp(Handler):
             for user in users:
                 if user.username == form_data['user_username']:
                     form_data['username_error'] = "User already exists"
+                    form_data['user_username'] = ""
                     error_flag = True
 
             if error_flag is False:
