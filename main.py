@@ -140,7 +140,15 @@ class UserSignUp(Handler):
 
 class Welcome(Handler):
     """Renders welcome screen after successful signup or login"""
-    pass
+    def get(self):
+        message = ""
+        usr_cookie = self.request.cookies.get('username')
+        if usr_cookie:
+            message = "Welcome, %s" % usr_cookie
+        else:
+            message = "Not logged in"
+
+        self.render('welcome.html', message=message)
 
 
 
