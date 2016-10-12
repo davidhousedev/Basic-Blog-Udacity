@@ -178,22 +178,30 @@ class Welcome(Handler):
         usr_cookie = self.request.cookies.get('user_id')
         if usr_cookie:
             if check_secure_val(usr_cookie):
-                message = "Welcome, %s" % usr_cookie.split('|')[0]
-            else:
-                self.redirect('/signup')
-        else:
-            message = "Not logged in"
+                key = db.Key.from_path('User', int(usr_cookie.split('|')[0]))
+                user = db.get(key)
+                print "user username is: %s" % user.username
 
-        self.render('welcome.html', message=message)
+                if not user:
+                    self.error(404)
+                    return
+
+                message = "Welcome, %s" % str(user.username)
+                self.render('welcome.html', message=message)
+
+                return
+
+
+        self.redirect('/signup')
 
 
 
 
 app = webapp2.WSGIApplication([('/', Blog),
                                ('/newpost', NewPost),
-                               ('/post/(\d+)', BlogPost),
+                               (r'/post/(\d+)', BlogPost),
                                ('/signup', UserSignUp),
                                ('/welcome', Welcome)
                               ],
                               debug=True
-                              )
+                             )
