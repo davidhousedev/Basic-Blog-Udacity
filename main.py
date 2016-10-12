@@ -33,7 +33,7 @@ def hash_str(s):
 def make_secure_val(s):
     """ Hashes param value and returns string containing cookie val and hashed val
             Returns 'val|hashed_val'"""
-    return "%s|%s" % (s, hash_str(s))
+    return str("%s|%s" % (s, hash_str(s)))
 def check_secure_val(h):
     """ Verifies that param cookie has been hashed with SECRET
             Returns value of cookie or None """
@@ -66,9 +66,9 @@ class Post(db.Model):
 
 class User(db.Model):
     """ Database entry for a user """
-    user_id = db.IntegerProperty(required=True)
     username = db.StringProperty(required=True)
     password = db.StringProperty(required=True)
+    email = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
 
 class Blog(Handler):
@@ -152,9 +152,14 @@ class UserSignUp(Handler):
                 error_flag = True
 
             if error_flag is False:
-                cookie_val = make_secure_val(form_data['user_username'])
+                user = User(username=form_data['user_username'],
+                            password=form_data['user_password'],
+                            email=form_data['user_email'])
+                user.put()
+                user_db_id = str(user.key().id())
+                print "put user, id=%s" % user.key().id()
                 self.response.headers.add_header('Set-Cookie',
-                                                 'user_id=%s' % str(cookie_val))
+                                                 'user_id=%s' % make_secure_val(user_db_id))
                 self.redirect('/welcome')
         else:
             if not username:
