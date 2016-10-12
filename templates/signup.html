@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <style type="text/css">
+        form {
+            width: 60%;
+            min-width: 350px;
+            text-align: right;
+        }
+        span {
+            position: absolute;
+            text-align: left;
+            color: red;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<body>
+    <h1>User Signup</h1>
+    <form method="post">
+        <label>Username
+            <input name="username" type="text" value="{{form_data['user_username']}}">
+        </label>
+        <span>{{form_data['username_error']}}</span>
+        <br>
+        <label>Password
+            <input name="password" type="text">
+        </label>
+        <span>{{form_data['password_error']}}</span>
+        <br>
+        <label>Verify Password
+            <input name="verify" type="text">
+        </label>
+        <span>{{form_data['verify_error']}}</span>
+        <br>
+        <label>E-mail Address (optional)
+            <input name="email" type="text" value="{{form_data['user_email']}}">
+        </label>
+        <span>{{form_data['email_error']}}</span>
+        <br>
+        <input type="submit">
+    </form>
+</body>
+</html>
+
+{% endblock %}

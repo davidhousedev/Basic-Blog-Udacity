@@ -1,4 +1,5 @@
 import os
+import re
 
 import jinja2
 import webapp2
@@ -8,6 +9,17 @@ from google.appengine.ext import db
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
 JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=False)
+
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+PASS_RE = re.compile(r"^.{3,20}$")
+EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+
+def valid_username(username):
+    return USER_RE.match(username)
+def valid_password(password):
+    return PASS_RE.match(password)
+def valid_email(email):
+    return EMAIL_RE.match(email)
 
 class Handler(webapp2.RequestHandler):
     """ Renders html templates with Jinja2 variables """
@@ -81,11 +93,54 @@ class BlogPost(Handler):
 
         self.render("post.html", post=post)
 
+class UserSignUp(Handler):
+    def write_form(self, form_data = ""):
+        self.render('signup.html', form_data = form_data)
+
+    def get(self):
+        self.write_form()
+
+    def post(self):
+        form_data = {}
+
+        form_data['user_username'] = self.request.get('username')
+        form_data['user_password'] = self.request.get('password')
+        form_data['user_verify'] = self.request.get('verify')
+        form_data['user_email'] = self.request.get('email')
+
+        username = valid_username(form_data['user_username'])
+        password = valid_password(form_data['user_password'])
+        verify = valid_password(form_data['user_verify'])
+        email = valid_email(form_data['user_email'])
+
+        if (username and password and verify):
+            error_flag = False
+            #check email, if provided
+            if (form_data['user_email'] != "" and not email):
+                form_data['email_error'] = "Trouble with your email"
+                error_flag = True
+            #check password, if provided
+            if form_data['user_password'] != form_data['user_verify']:
+                form_data['verify_error'] = "No matchy matchy"
+                error_flag = True
+
+            if error_flag is False:
+                self.redirect('/welcome?username=' + form_data['user_username'])
+        else:
+            if not username:
+                form_data['username_error'] = "Bad username, bud"
+            if not password or not verify:
+                form_data['password_error'] = "Follow the password rules plz"
+            if (form_data['user_email'] != "" and not email):
+                form_data['email_error'] = "Trouble with your email"
+
+        self.write_form(form_data)
 
 
 app = webapp2.WSGIApplication([('/', Blog),
                                ('/newpost', NewPost),
                                ('/post/(\d+)', BlogPost),
+                               ('/signup', UserSignUp),
                               ],
                               debug=True
                               )
