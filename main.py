@@ -55,6 +55,7 @@ def make_pw_hash(name, pw, salt=""):
     return '%s,%s' % (h, salt)
 
 def valid_pw(name, pw, h):
+    print "Current password is: %s" % h
     db_salt = h.split(',')[1]
 
     if h == make_pw_hash(name, pw, db_salt):
@@ -210,7 +211,30 @@ class UserLogIn(Handler):
         self.write_form()
 
     def post(self):
-        pass
+        form_data = {}
+
+        form_data['user_username'] = self.request.get('username')
+        form_data['user_password'] = self.request.get('password')
+
+        username = valid_username(form_data['user_username'])
+        password = valid_password(form_data['user_password'])
+
+        if username and password:
+            users = db.GqlQuery("SELECT * FROM User WHERE username='%s'" % form_data['user_username'])
+            for user in users:
+                if user.username == form_data['user_username']:
+                    if valid_pw(form_data['user_username'],
+                                form_data['user_password'],
+                                user.password):
+                        user_db_id = str(user.key().id())
+                        self.response.headers.add_header('Set-Cookie',
+                                                         'user_id=%s' % make_secure_val(user_db_id))
+                        self.redirect('/welcome')
+                        return
+            form_data['password_error'] = "Invalid username or password"
+            self.write_form(form_data)
+
+
 
 class Welcome(Handler):
     """Renders welcome screen after successful signup or login"""
