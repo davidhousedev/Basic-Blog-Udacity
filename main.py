@@ -172,15 +172,14 @@ class UserSignUp(Handler):
                 error_flag = True
 
             #check if user already exists
-            key = db.Key.from_path('User', form_data['user_username'])
-            user = db.get(key)
-            if user:
-                form_data['user_error'] = "User already exists"
-                error_flag = True
-
+            users = db.GqlQuery("SELECT * FROM User WHERE username='%s'" % form_data['user_username'])
+            for user in users:
+                if user.username == form_data['user_username']:
+                    form_data['username_error'] = "User already exists"
+                    error_flag = True
 
             if error_flag is False:
-                hash_pass = make_pw_hash(form_data['user_namename'],
+                hash_pass = make_pw_hash(form_data['user_username'],
                                          form_data['user_password'])
 
                 user = User(username=form_data['user_username'],
