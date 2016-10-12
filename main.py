@@ -113,10 +113,10 @@ class UserSignUp(Handler):
         verify = valid_password(form_data['user_verify'])
         email = valid_email(form_data['user_email'])
 
-        if (username and password and verify):
+        if username and password and verify:
             error_flag = False
             #check email, if provided
-            if (form_data['user_email'] != "" and not email):
+            if form_data['user_email'] != "" and not email:
                 form_data['email_error'] = "Trouble with your email"
                 error_flag = True
             #check password, if provided
@@ -125,22 +125,31 @@ class UserSignUp(Handler):
                 error_flag = True
 
             if error_flag is False:
-                self.redirect('/welcome?username=' + form_data['user_username'])
+                self.response.headers.add_header('Set-Cookie',
+                                                 'username=%s' % str(form_data['user_username']))
+                self.redirect('/welcome')
         else:
             if not username:
                 form_data['username_error'] = "Bad username, bud"
             if not password or not verify:
                 form_data['password_error'] = "Follow the password rules plz"
-            if (form_data['user_email'] != "" and not email):
+            if form_data['user_email'] != "" and not email:
                 form_data['email_error'] = "Trouble with your email"
 
         self.write_form(form_data)
+
+class Welcome(Handler):
+    """Renders welcome screen after successful signup or login"""
+    pass
+
+
 
 
 app = webapp2.WSGIApplication([('/', Blog),
                                ('/newpost', NewPost),
                                ('/post/(\d+)', BlogPost),
                                ('/signup', UserSignUp),
+                               ('/welcome', Welcome)
                               ],
                               debug=True
                               )
