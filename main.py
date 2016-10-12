@@ -172,8 +172,11 @@ class UserSignUp(Handler):
                 error_flag = True
 
             if error_flag is False:
+                hash_pass = make_pw_hash(form_data['user_name'],
+                                         form_data['user_password'])
+
                 user = User(username=form_data['user_username'],
-                            password=form_data['user_password'],
+                            password=hash_pass,
                             email=form_data['user_email'])
                 user.put()
                 user_db_id = str(user.key().id())
