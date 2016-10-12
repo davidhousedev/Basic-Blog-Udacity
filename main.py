@@ -148,7 +148,7 @@ class UserSignUp(Handler):
             if error_flag is False:
                 cookie_val = make_secure_val(form_data['user_username'])
                 self.response.headers.add_header('Set-Cookie',
-                                                 'username=%s' % str(cookie_val))
+                                                 'user_id=%s' % str(cookie_val))
                 self.redirect('/welcome')
         else:
             if not username:
@@ -164,7 +164,7 @@ class Welcome(Handler):
     """Renders welcome screen after successful signup or login"""
     def get(self):
         message = ""
-        usr_cookie = self.request.cookies.get('username')
+        usr_cookie = self.request.cookies.get('user_id')
         if usr_cookie:
             if check_secure_val(usr_cookie):
                 message = "Welcome, %s" % usr_cookie.split('|')[0]
