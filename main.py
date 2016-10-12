@@ -146,8 +146,9 @@ class UserSignUp(Handler):
                 error_flag = True
 
             if error_flag is False:
+                cookie_val = make_secure_val(form_data['user_username'])
                 self.response.headers.add_header('Set-Cookie',
-                                                 'username=%s' % str(form_data['user_username']))
+                                                 'username=%s' % str(cookie_val))
                 self.redirect('/welcome')
         else:
             if not username:
@@ -165,7 +166,10 @@ class Welcome(Handler):
         message = ""
         usr_cookie = self.request.cookies.get('username')
         if usr_cookie:
-            message = "Welcome, %s" % usr_cookie
+            if check_secure_val(usr_cookie):
+                message = "Welcome, %s" % usr_cookie.split('|')[0]
+            else:
+                self.redirect('/signup')
         else:
             message = "Not logged in"
 
