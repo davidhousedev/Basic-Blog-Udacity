@@ -202,6 +202,16 @@ class UserSignUp(Handler):
 
         self.write_form(form_data)
 
+class UserLogIn(Handler):
+    def write_form(self, form_data = ""):
+        self.render('login.html', form_data = form_data)
+
+    def get(self):
+        self.write_form()
+
+    def post(self):
+        pass
+
 class Welcome(Handler):
     """Renders welcome screen after successful signup or login"""
     def get(self):
@@ -232,7 +242,8 @@ app = webapp2.WSGIApplication([('/', Blog),
                                ('/newpost', NewPost),
                                (r'/post/(\d+)', BlogPost),
                                ('/signup', UserSignUp),
-                               ('/welcome', Welcome)
+                               ('/login', UserLogIn),
+                               ('/welcome', Welcome),
                               ],
                               debug=True
                              )
