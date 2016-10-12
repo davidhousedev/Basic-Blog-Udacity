@@ -180,7 +180,7 @@ class UserSignUp(Handler):
 
 
             if error_flag is False:
-                hash_pass = make_pw_hash(form_data['user_name'],
+                hash_pass = make_pw_hash(form_data['user_namename'],
                                          form_data['user_password'])
 
                 user = User(username=form_data['user_username'],
