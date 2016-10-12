@@ -3,6 +3,7 @@ import re
 
 import jinja2
 import webapp2
+import hmac
 
 from google.appengine.ext import db
 
@@ -14,12 +15,32 @@ USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 PASS_RE = re.compile(r"^.{3,20}$")
 EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
 
+# User signup validation
 def valid_username(username):
     return USER_RE.match(username)
 def valid_password(password):
     return PASS_RE.match(password)
 def valid_email(email):
     return EMAIL_RE.match(email)
+
+SECRET = "turtles"
+
+# Hash signin cookie
+def hash_str(s):
+    """ Returns HMAC hashed string with SECRET of param
+            Returns str"""
+    return hmac.new(SECRET, s).hexdigest()
+def make_secure_val(s):
+    """ Hashes param value and returns string containing cookie val and hashed val
+            Returns 'val|hashed_val'"""
+    return "%s|%s" % (s, hash_str(s))
+def check_secure_val(h):
+    """ Verifies that param cookie has been hashed with SECRET
+            Returns value of cookie or None """
+    val = h.split('|')[0]
+    if h == make_secure_val(val):
+        return val
+
 
 class Handler(webapp2.RequestHandler):
     """ Renders html templates with Jinja2 variables """
