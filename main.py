@@ -64,6 +64,12 @@ class Post(db.Model):
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
 
+class User(db.Model):
+    """ Database entry for a user """
+    user_id = db.IntegerProperty(required=True)
+    username = db.StringProperty(required=True)
+    password = db.StringProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
 
 class Blog(Handler):
     """ Default HTTP Request Handler """
