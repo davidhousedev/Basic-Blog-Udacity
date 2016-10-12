@@ -4,6 +4,9 @@ import re
 import jinja2
 import webapp2
 import hmac
+import hashlib
+import random
+import string
 
 from google.appengine.ext import db
 
@@ -40,6 +43,23 @@ def check_secure_val(h):
     val = h.split('|')[0]
     if h == make_secure_val(val):
         return val
+
+# Password hashing
+def make_salt():
+    return ''.join(random.choice(string.letters) for x in xrange(5))
+
+def make_pw_hash(name, pw, salt=""):
+    if not salt:
+        salt = make_salt()
+    h = hashlib.sha256(name + pw + salt).hexdigest()
+    return '%s,%s' % (h, salt)
+
+def valid_pw(name, pw, h):
+    db_salt = h.split(',')[1]
+
+    if h == make_pw_hash(name, pw, db_salt):
+        return True
+
 
 
 class Handler(webapp2.RequestHandler):
