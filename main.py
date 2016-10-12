@@ -172,7 +172,7 @@ class UserSignUp(Handler):
                 error_flag = True
 
             #check if user already exists
-            key = db.Key.from_path('User', form_data['username_name'])
+            key = db.Key.from_path('User', form_data['user_username'])
             user = db.get(key)
             if user:
                 form_data['user_error'] = "User already exists"
